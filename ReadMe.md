@@ -6,4 +6,6 @@ On top of the varialbes supported by the [base image](https://hub.docker.com/r/a
 
 * `ATL_TOMCAT_STUCK_THREAD_DETECTION_VALVE_TIMEOUT`: Timeout for detecting stuck threads. Defaults to 60s.
 
+The images gets the various Confluence logs redirected to stdout for easier logging with Kubernetes, etc
+
 Maitained by the ACP team
