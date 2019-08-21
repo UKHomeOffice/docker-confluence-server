@@ -3,6 +3,8 @@ matrix:
     - ukhomeofficedigital/confluence-server
   DOCKER_REPO:
     - quay.io
+  DOCKER_USERNAME:
+    - ukhomeofficedigital+confluence_server
 pipeline:
   docker-build:
     image: docker
@@ -19,7 +21,6 @@ pipeline:
   docker-push:
     image: docker
     secrets:
-      - docker_username
       - docker_password
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
