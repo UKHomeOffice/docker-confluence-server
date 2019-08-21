@@ -1,4 +1,4 @@
-FROM atlassian/confluence-server:6.15.6-adoptopenjdk8
+FROM atlassian/confluence-server:6.15.7-adoptopenjdk8
 
 ENV ATLASSIAN_INSTALL_DIR /opt/atlassian
 ENV CONFLUENCE_HOME /var/atlassian/application-data/confluence
@@ -6,11 +6,16 @@ ENV CONFLUENCE_HOME /var/atlassian/application-data/confluence
 # The id of the confluence user is 2002
 RUN chown -R 2002:2002 ${ATLASSIAN_INSTALL_DIR}
 
-ADD bin/entrypoint.py /entrypoint.py
-RUN chmod 755 /entrypoint.py
+COPY bin/hardening.py /hardening.py
+# modify the original entrypoint.py to call our hardening functions
+RUN sed -i '/import jinja2.*/a from hardening import gen_cfg_no_chown' /entrypoint.py && \
+    sed -i '/import jinja2.*/a from hardening import all_logs_to_stdout' /entrypoint.py && \
+    sed -i '/os.execv/i all_logs_to_stdout()' /entrypoint.py && \
+    sed -i 's/^gen_cfg/gen_cfg_no_chown/' /entrypoint.py
 
-ADD install/etc/server.xml.j2 ${ATLASSIAN_INSTALL_DIR}/etc/
-RUN chown 2002:2002 ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2
+# modify the server.xml template to include a parameterized valve timeout
+RUN sed -i '/org.apache.catalina.valves.StuckThreadDetectionValve/{N;s/threshold=".*"/threshold="{{ atl_tomcat_stuck_thread_detection_valve_timeout | default('"'"'60'"'"') }}"/}' \
+       ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2 
 
 RUN chown -R 2002:2002 ${CONFLUENCE_HOME}
 
