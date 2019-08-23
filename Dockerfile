@@ -19,6 +19,11 @@ RUN sed -i '/org.apache.catalina.valves.StuckThreadDetectionValve/{N;s/threshold
 
 RUN chown -R 2002:2002 ${CONFLUENCE_HOME}
 
+# Atlassian's gen_cfg and our gen_cfg_no_chown should have the same signature
+# Fail the build if that's not the case
+COPY bin/check_signatures.sh /
+RUN chmod +x /check_signatures.sh && /check_signatures.sh
+
 USER 2002
 
 CMD ["/entrypoint.py", "-fg"]
