@@ -13,9 +13,11 @@ def symlink_log(log_file):
                         os.rename(log_file, f"{log_file}.{time.strftime('%Y-%m-%d-%H-%M-%S', time.gmtime())}")
                 os.symlink('/dev/stdout', log_file)
 
-# generate config file, defaulting to run user and group, not root, and allowing to skip permission setting
-def gen_cfg_no_chown(tmpl, target, env, user=None, group=None, mode=0o644, skip_set_perms=False):
-    # ignore user and group
+# generate config file, ignoring any requests to change ownership as we are already running as a non-privileged user
+def gen_cfg_no_chown(tmpl, target, env, user='root', group='root', mode=0o644, overwrite=True):
+    if not overwrite and os.path.exists(target):
+        logging.info(f"{target} exists; skipping.")
+        return
     logging.info(f"Generating {target} from template {tmpl} (no chown)")
     # Setup Jinja2 for templating
     jenv = j2.Environment(
@@ -25,6 +27,7 @@ def gen_cfg_no_chown(tmpl, target, env, user=None, group=None, mode=0o644, skip_
     with open(target, 'w') as fd:
         fd.write(cfg)
     os.chmod(target, mode)
+    # ignore user and group
 
 # Get the Confluence logs out to stdout
 def all_logs_to_stdout():
