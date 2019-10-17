@@ -11,7 +11,15 @@ COPY bin/hardening.py /hardening.py
 RUN sed -i '/import jinja2.*/a from hardening import gen_cfg_no_chown' /entrypoint.py && \
     sed -i '/import jinja2.*/a from hardening import all_logs_to_stdout' /entrypoint.py && \
     sed -i '/os.execv/i all_logs_to_stdout()' /entrypoint.py && \
-    sed -i 's/^gen_cfg/gen_cfg_no_chown/' /entrypoint.py
+    sed -i 's/^gen_cfg/gen_cfg_no_chown/' /entrypoint.py && \
+    sed -i '/1catalina.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/1catalina.org.apache.juli.AsyncFileHandler.level/i 1catalina.org.apache.juli.FileHandler.rotatable = false' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/2localhost.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/2localhost.org.apache.juli.AsyncFileHandler.level/i 2localhost.org.apache.juli.FileHandler.rotatable = false' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/3manager.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/3manager.org.apache.juli.AsyncFileHandler.level/i 3manager.org.apache.juli.FileHandler.rotatable = false' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/4host-manager.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
+    sed -i '/4host-manager.org.apache.juli.AsyncFileHandler.level/i 4host-manager.org.apache.juli.FileHandler.rotatable = false' /opt/atlassian/confluence/conf/logging.properties
 
 # modify the server.xml template to include a parameterized valve timeout
 RUN sed -i '/org.apache.catalina.valves.StuckThreadDetectionValve/{N;s/threshold=".*"/threshold="{{ atl_tomcat_stuck_thread_detection_valve_timeout | default('"'"'60'"'"') }}"/}' \
