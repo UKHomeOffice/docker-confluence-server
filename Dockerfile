@@ -19,7 +19,6 @@ RUN sed -i '/import jinja2.*/a from hardening import gen_cfg_no_chown' /entrypoi
     sed -i '/# Generate all configuration files for Confluence/a \                f"{env['"'"'confluence_install_dir'"'"']}/conf/server.xml", env)' /entrypoint.py && \
     sed -i '/# Generate all configuration files for Confluence/a gen_cfg_no_chown('"'"'server.xml.j2'"'"',' /entrypoint.py && \
     sed -i '/# Generate all configuration files for Confluence/a logging.info(f"Configuring server.xml, seraph-config.xml and confluence-init.properties regardless of run-as user")' /entrypoint.py && \
-
     sed -i '/1catalina.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
     sed -i '/1catalina.org.apache.juli.AsyncFileHandler.level/i 1catalina.org.apache.juli.FileHandler.rotatable = false' /opt/atlassian/confluence/conf/logging.properties && \
     sed -i '/2localhost.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
