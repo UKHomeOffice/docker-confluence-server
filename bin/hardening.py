@@ -38,3 +38,15 @@ def all_logs_to_stdout():
     symlink_log(f"{logs_folder}/atlassian-confluence.log")
     symlink_log(f"{logs_folder}/atlassian-diagnostics.log")
     symlink_log(f"{logs_folder}/atlassian-synchrony.log")
+
+# Generate the config files even we are not root
+def gen_configs(env):
+    logging.info(f"Generating configs for server.xml, seraph-config.xml and confluence-init.properties (regardless of run-as user)")
+    gen_cfg_no_chown('server.xml.j2',
+                    f"{env['confluence_install_dir']}/conf/server.xml", env)
+
+    gen_cfg_no_chown('seraph-config.xml.j2',
+                    f"{env['confluence_install_dir']}/confluence/WEB-INF/classes/seraph-config.xml", env)
+
+    gen_cfg_no_chown('confluence-init.properties.j2',
+                    f"{env['confluence_install_dir']}/confluence/WEB-INF/classes/confluence-init.properties", env)
