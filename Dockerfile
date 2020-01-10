@@ -1,4 +1,4 @@
-FROM atlassian/confluence-server:6.15.9-adoptopenjdk8
+FROM atlassian/confluence-server:6.15.10-adoptopenjdk8
 
 ENV ATLASSIAN_INSTALL_DIR /opt/atlassian
 ENV CONFLUENCE_HOME /var/atlassian/application-data/confluence
@@ -25,7 +25,7 @@ RUN sed -i '/import jinja2.*/a from hardening import gen_cfg_no_chown' /entrypoi
 
 # modify the server.xml template to include a parameterized valve timeout
 RUN sed -i '/org.apache.catalina.valves.StuckThreadDetectionValve/{N;s/threshold=".*"/threshold="{{ atl_tomcat_stuck_thread_detection_valve_timeout | default('"'"'60'"'"') }}"/}' \
-       ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2 
+       ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2
 
 RUN chown -R 2002:2002 ${CONFLUENCE_HOME}
 
