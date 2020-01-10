@@ -8,12 +8,10 @@ RUN chown -R 2002:2002 ${ATLASSIAN_INSTALL_DIR}
 
 COPY bin/hardening.py /hardening.py
 # modify the original entrypoint.py to call our hardening functions
-RUN sed -i '/import jinja2.*/a from hardening import gen_cfg_no_chown' /entrypoint.py && \
-    sed -i '/import jinja2.*/a from hardening import all_logs_to_stdout' /entrypoint.py && \
-    sed -i '/import jinja2.*/a from hardening import gen_configs' /entrypoint.py && \
-    sed -i '/os.execv/i all_logs_to_stdout()' /entrypoint.py && \
+RUN sed -i '/from entrypoint_helpers/a from hardening import gen_cfg_no_chown, all_logs_to_stdout, gen_configs' /entrypoint.py && \
+    sed -i '/start_app(/i all_logs_to_stdout()' /entrypoint.py && \
     sed -i 's/^gen_cfg/gen_cfg_no_chown/' /entrypoint.py && \
-    sed -i '/# Generate all configuration files for Confluence/a gen_configs(env)' /entrypoint.py && \
+    sed -i '/CONFLUENCE_HOME =/a gen_configs(env)' /entrypoint.py && \
     sed -i '/1catalina.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
     sed -i '/1catalina.org.apache.juli.AsyncFileHandler.level/i 1catalina.org.apache.juli.FileHandler.rotatable = false' /opt/atlassian/confluence/conf/logging.properties && \
     sed -i '/2localhost.org.apache.juli.FileHandler.rotatable/d' /opt/atlassian/confluence/conf/logging.properties && \
