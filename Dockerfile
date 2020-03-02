@@ -1,4 +1,4 @@
-FROM atlassian/confluence-server:7.3.2-adoptopenjdk8
+FROM atlassian/confluence-server:7.3-adoptopenjdk8
 
 ENV ATLASSIAN_INSTALL_DIR /opt/atlassian
 ENV CONFLUENCE_HOME /var/atlassian/application-data/confluence
