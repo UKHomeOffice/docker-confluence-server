@@ -1,4 +1,4 @@
-FROM atlassian/confluence-server:6.15.10-adoptopenjdk8
+FROM atlassian/confluence-server:7.3.2
 
 ENV ATLASSIAN_INSTALL_DIR /opt/atlassian
 ENV CONFLUENCE_HOME /var/atlassian/application-data/confluence
@@ -25,7 +25,7 @@ RUN sed -i '/from entrypoint_helpers/a from hardening import gen_cfg_no_chown, a
 RUN sed -i '/org.apache.catalina.valves.StuckThreadDetectionValve/{N;s/threshold=".*"/threshold="{{ atl_tomcat_stuck_thread_detection_valve_timeout | default('"'"'60'"'"') }}"/}' \
        ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2 && \
        sed -i '/redirectPort=/i debug="0"' ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2 && \
-       sed -i '/redirectPort=/i URIEncoding="UTF-8"' ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2 
+       sed -i '/redirectPort=/i URIEncoding="UTF-8"' ${ATLASSIAN_INSTALL_DIR}/etc/server.xml.j2
 
 RUN chown -R 2002:2002 ${CONFLUENCE_HOME}
 
